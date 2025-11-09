@@ -27,6 +27,8 @@ Django-healthcare-provider-search/
 ├── manage.py                          → Django management entry point
 └── requirements.txt                   → Python dependencies
 
+```
+
 ## ⚙️ Installation Guide
 1️⃣ Clone the repository
 git clone https://github.com/yvonnehan777/Django-healthcare-provider-search.git
