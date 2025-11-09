@@ -11,20 +11,20 @@ A web-based application built with **Django** and **PostgreSQL**, designed for e
 ## 🧩 Project Structure
 Django-healthcare-provider-search/
 │
-├── healthcare_search/ # Main project configuration (settings, urls, wsgi)
+├── healthcare_search/                 → Main project configuration (settings, urls, wsgi)
 │
-├── medicaid_providers_lookup/ # Core app handling search and filtering
-│ ├── models.py # Defines provider and taxonomy models
-│ ├── views.py # Search logic and query handling
-│ ├── urls.py # URL routing for search endpoints
-│ └── templates/search.html # HTML template for the search interface
+├── medicaid_providers_lookup/         → Core app handling search and filtering
+│   ├── models.py                      → Defines provider and taxonomy models
+│   ├── views.py                       → Search logic and query handling
+│   ├── urls.py                        → URL routing for search endpoints
+│   └── templates/search.html          → HTML template for the search interface
 │
-├── scripts/ # Utility scripts for data loading
-│ └── import_data.py
+├── scripts/                           → Utility scripts for data loading
+│   └── import_data.py
 │
-├── static/ # Static assets (CSS, JS, images)
-├── manage.py # Django management entry point
-└── requirements.txt # Python dependencies
+├── static/                            → Static assets (CSS, JS, images)
+├── manage.py                          → Django management entry point
+└── requirements.txt                   → Python dependencies
 
 ## ⚙️ Installation Guide
 1️⃣ Clone the repository
