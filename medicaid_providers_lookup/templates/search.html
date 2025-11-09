@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Provider Search</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .search-form {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .results {
+            margin-top: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+        }
+        th:hover {
+            background-color: #2980b9;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .no-results {
+            color: #e74c3c;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+        }
+        .search-summary {
+            margin-bottom: 15px;
+            font-style: italic;
+            color: #7f8c8d;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .pagination a {
+            color: #3498db;
+            padding: 8px 16px;
+            text-decoration: none;
+            border: 1px solid #ddd;
+            margin: 0 4px;
+        }
+        .pagination a.active {
+            background-color: #3498db;
+            color: white;
+            border: 1px solid #3498db;
+        }
+        .pagination a:hover:not(.active) {
+            background-color: #ddd;
+        }
+        .sort-controls {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sort-controls label {
+            margin-bottom: 0;
+            font-weight: normal;
+        }
+        .sort-controls select {
+            width: auto;
+            padding: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Healthcare Provider Search</h1>
+
+        <div class="search-form">
+            <form method="get" action="">
+                <input type="hidden" name="page" value="1">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="first_name">First Name</label>
+                        <input type="text" id="first_name" name="first_name" value="{{ query.first_name }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="last_name">Last Name</label>
+                        <input type="text" id="last_name" name="last_name" value="{{ query.last_name }}">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" id="city" name="city" value="{{ query.city }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="state">State (e.g. NY)</label>
+                        <input type="text" id="state" name="state" value="{{ query.state }}" maxlength="2">
+                    </div>
+                    <div class="form-group">
+                        <label for="zip">ZIP Code</label>
+                        <input type="text" id="zip" name="zip" value="{{ query.zip }}">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="specialty">Specialty</label>
+                        <input type="text" id="specialty" name="specialty" value="{{ query.specialty }}">
+                    </div>
+                    <div class="form-group" style="align-self: flex-end;">
+                        <button type="submit">Search Providers</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="results">
+            {% if all_empty %}
+                <div class="no-results">
+                    Please enter at least one search criteria
+                </div>
+            {% elif results %}
+                <div class="search-summary">
+                    Showing {{ results|length }} of {{ results.paginator.count }} results (20 per page) - Page {{ results.number }} of {{ results.paginator.num_pages }}
+                </div>
+
+                <div class="sort-controls">
+                    <label for="sort_by">Sort by:</label>
+                    <select id="sort_by" name="sort_by" onchange="updateSort(this.value)">
+                        <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name (Last, First)</option>
+                        <option value="first_name" {% if sort_by == 'first_name' %}selected{% endif %}>First Name</option>
+                        <option value="last_name" {% if sort_by == 'last_name' %}selected{% endif %}>Last Name</option>
+                        <option value="specialty" {% if sort_by == 'specialty' %}selected{% endif %}>Specialty</option>
+                    </select>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th onclick="updateSort('name')">Name ↕</th>
+                            <th>Address</th>
+                            <th onclick="updateSort('specialty')">Specialties ↕</th>
+                            <th>Phone</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for provider in results %}
+                        <tr>
+                            <td>{{ provider.full_name }}</td>
+                            <td>{{ provider.address }}</td>
+                            <td>{{ provider.specialties }}</td>
+                            <td>{{ provider.phone }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="pagination">
+                    {% if results.has_previous %}
+                        <a href="?page=1&sort_by={{ sort_by }}{% for key, value in query.items %}{% if value %}&{{ key }}={{ value }}{% endif %}{% endfor %}">&laquo; first</a>
+                        <a href="?page={{ results.previous_page_number }}&sort_by={{ sort_by }}{% for key, value in query.items %}{% if value %}&{{ key }}={{ value }}{% endif %}{% endfor %}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Page {{ results.number }} of {{ results.paginator.num_pages }}
+                    </span>
+
+                    {% if results.has_next %}
+                        <a href="?page={{ results.next_page_number }}&sort_by={{ sort_by }}{% for key, value in query.items %}{% if value %}&{{ key }}={{ value }}{% endif %}{% endfor %}">next</a>
+                        <a href="?page={{ results.paginator.num_pages }}&sort_by={{ sort_by }}{% for key, value in query.items %}{% if value %}&{{ key }}={{ value }}{% endif %}{% endfor %}">last &raquo;</a>
+                    {% endif %}
+                </div>
+            {% elif request.GET %}
+                <div class="no-results">
+                    No providers found matching your criteria
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function updateSort(sortValue) {
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('sort_by', sortValue);
+            urlParams.set('page', '1'); // Reset to first page when changing sort
+            window.location.search = urlParams.toString();
+        }
+    </script>
+</body>
+</html>
