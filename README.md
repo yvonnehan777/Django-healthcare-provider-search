@@ -9,6 +9,7 @@ A web-based application built with **Django** and **PostgreSQL**, designed for e
 - **Modular Architecture** — Easy to maintain, extend, and deploy  
 
 ## 🧩 Project Structure
+```text
 Django-healthcare-provider-search/
 │
 ├── healthcare_search/                 → Main project configuration (settings, urls, wsgi)
