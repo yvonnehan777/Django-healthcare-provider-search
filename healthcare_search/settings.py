@@ -33,7 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'medicaid_providers_lookup',  # 确保这是正确的应用名
+    'medicaid_providers_lookup',  
 ]
 
 MIDDLEWARE = [
@@ -48,11 +48,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'healthcare_search.urls'
 
-# 修复模板配置
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],  # 关键修改：禁用全局模板目录
+        'DIRS': [],  
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -61,16 +60,14 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
-            'debug': DEBUG,  # 新增：启用模板调试
+            'debug': DEBUG,  
         },
     },
 ]
 
-# 静态文件配置（开发简化版）
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')] if DEBUG else []
 
-# 增强的数据库配置
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -80,13 +77,12 @@ DATABASES = {
         'HOST': os.getenv('DB_HOST', 'localhost'),
         'PORT': os.getenv('DB_PORT', '5432'),
         'OPTIONS': {
-            'connect_timeout': 10,  # 新增超时设置
-            'sslmode': 'prefer' if DEBUG else 'require',  # SSL模式
+            'connect_timeout': 10,  
+            'sslmode': 'prefer' if DEBUG else 'require', 
         },
     }
 }
 
-# 密码验证
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -94,21 +90,17 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# 国际化设置
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# 静态文件配置
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  # 新增静态文件目录
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')    # 收集静态文件目录
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')    
 
-# 默认主键
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# 新增安全配置
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = True
