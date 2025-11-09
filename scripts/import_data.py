@@ -1,7 +1,7 @@
 # Database connection setup
 import psycopg2
 import pandas as pd
-from psycopg2.extras import execute_batch  # 批量插入关键库
+from psycopg2.extras import execute_batch  
 
 # Database credentials
 DB_CONFIG = {
@@ -77,14 +77,12 @@ def load_taxonomy_data():
     conn = psycopg2.connect(**DB_CONFIG)
     cur = conn.cursor()
 
-    # 准备批量数据
     data = [(
         row['Code'], row['Grouping'], row['Classification'],
         row['Specialization'], row['Definition'], row['Notes'],
         row['Display Name'], row['Section']
     ) for _, row in df.iterrows()]
 
-    # 批量插入（每次1000条）
     execute_batch(cur, """
         INSERT INTO taxonomy (
             code, grouping, classification, specialization,
@@ -113,7 +111,6 @@ def load_provider_data():
         "Provider Business Practice Location Address Fax Number"
     ]
 
-    # 分块读取大文件（避免内存不足）
     chunk_size = 50000
     total_records = 0
     for chunk in pd.read_csv(
@@ -140,7 +137,6 @@ def load_provider_data():
         conn = psycopg2.connect(**DB_CONFIG)
         cur = conn.cursor()
 
-        # 批量插入当前chunk
         execute_batch(cur, """
             INSERT INTO providers (
                 npi, entity_type_code, organization_name, last_name, first_name,
@@ -173,7 +169,6 @@ def load_provider_taxonomy():
     cur.execute("SELECT id, npi FROM providers;")
     provider_map = {npi: pid for pid, npi in cur.fetchall()}
 
-    # 分块处理大文件
     chunk_size = 50000
     total_relationships = 0
     for chunk in pd.read_csv(
@@ -182,7 +177,6 @@ def load_provider_taxonomy():
             chunksize=chunk_size,
             dtype=str
     ):
-        # 准备批量关系数据
         relationships = []
         for _, row in chunk.iterrows():
             npi = row['NPI']
@@ -195,7 +189,6 @@ def load_provider_taxonomy():
                 if code and code in taxonomy_map:
                     relationships.append((provider_id, taxonomy_map[code]))
 
-        # 批量插入关系
         if relationships:
             execute_batch(cur, """
                 INSERT INTO provider_taxonomy (provider_id, taxonomy_id)
