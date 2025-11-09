@@ -61,3 +61,11 @@ python manage.py migrate
 python manage.py runserver
 
 Then visit http://127.0.0.1:8000/ in your browser 🚀
+
+Notes:
+
+You can import provider data using the script in scripts/import_data.py. 
+
+Adjust pagination and query logic in views.py for performance tuning.
+
+.gitignore excludes venv/, db.sqlite3, and cache files to keep the repo clean.
